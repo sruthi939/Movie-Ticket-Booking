@@ -16,13 +16,15 @@ const Navbar = () => {
       <Link to='/' className='max-md: flex-1'>
         <img src="" alt='logo' className='w-36 h-auto' />
       </Link>
-      <div className={`max-md:absolute max-md:top-0 max-md:left-0 max-md:font-medium max-md:text-lg z-50 flex flex-col md:flex-row items-center max-md:justify-center gap-8 md:px-8 py-3 max-md:h-screen md:rounded-full backdrop-blur bg-black/70 md:bg-white/10 md:border border-gray-300/20 overflow-hidden transistion-[width] duration-300 ${isOpen ? 'max-md:w-full' : 'max-md:w-0'}`}>
-        <X className='md:hidden absolute top-6 right-6 w-6 h-6 cursor-pointer' onClick={() => setIsOpen(!isOpen)} />
-        <Link onClick={() => { scrollTo(0, 0), setIsOpen(false) }} to='/'>Home</Link>
-        <Link onClick={() => { scrollTo(0, 0), setIsOpen(false) }} to='/movies'>Movies</Link>
-        <Link onClick={() => { scrollTo(0, 0), setIsOpen(false) }} to='/'>Theaters</Link>
-        <Link onClick={() => { scrollTo(0, 0), setIsOpen(false) }} to='/'>Releases</Link>
-        <Link onClick={() => { scrollTo(0, 0), setIsOpen(false) }} to='/favorites'>Favorites</Link>
+      <div className='absolute left-1/2 -translate-x-1/2'>
+        <div className={`max-md:fixed max-md:top-0 max-md:left-0 max-md:font-medium max-md:text-lg z-50 flex flex-col md:flex-row items-center max-md:justify-center gap-8 md:px-8 py-3 max-md:h-screen md:rounded-full backdrop-blur bg-black/70 md:bg-white/10 md:border border-gray-300/20 overflow-hidden transition-all duration-300 ${isOpen ? 'max-md:w-full' : 'max-md:w-0'}`}>
+          <X className='md:hidden absolute top-6 right-6 w-6 h-6 cursor-pointer' onClick={() => setIsOpen(!isOpen)} />
+          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/'>Home</Link>
+          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/movies'>Movies</Link>
+          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/theaters'>Theaters</Link>
+          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/releases'>Releases</Link>
+          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/favorites'>Favorites</Link>
+        </div>
       </div>
       <div className='flex items-center gap-8'>
         <Search className='max-md:hidden w-6 h-6 cursor-pointer' />
@@ -36,7 +38,7 @@ const Navbar = () => {
               <UserButton.MenuItems>
                 <UserButton.Action label='My Bookings'
                   labelIcon={<TicketPlus width={15} />}
-                  onClick={()=> navigate('/')}
+                  onClick={() => navigate('/')}
                 />
               </UserButton.MenuItems>
             </UserButton>
