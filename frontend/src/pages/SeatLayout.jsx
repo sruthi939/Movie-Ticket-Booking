@@ -3,10 +3,10 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, CalendarDays, CheckCircle2, Clock3, Ticket, Trash2, Users } from 'lucide-react'
 import { movies } from '../data/movies'
 
-const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-const seatsPerRow = 12
-const vipRows = new Set(['A', 'B'])
-const reservedSeats = new Set(['C-6', 'D-4', 'D-5', 'F-12', 'G-8', 'H-3', 'H-4', 'J-10'])
+const rows = ['A','B','C','D','E','F','G','H','I','J','K','L','M']
+const seatsPerRow = 14
+const vipRows = new Set(['A', 'B', 'C'])
+const reservedSeats = new Set(['C-6', 'D-4', 'D-5', 'F-12', 'G-8', 'H-3', 'H-4', 'J-10', 'L-14'])
 
 const buildDateOptions = () => {
   return Array.from({ length: 5 }, (_, idx) => {
@@ -42,25 +42,28 @@ const SeatLayout = () => {
       setSelectedSeats((prev) => prev.filter((item) => item !== seatId))
       return
     }
-    if (selectedSeats.length >= ticketCount) {
-      return
-    }
     setSelectedSeats((prev) => [...prev, seatId])
   }
 
-  useEffect(() => {
-    if (selectedSeats.length > ticketCount) {
-      setSelectedSeats((prev) => prev.slice(0, ticketCount))
-    }
-  }, [ticketCount, selectedSeats])
 
-  const bookingComplete = selectedSeats.length === ticketCount
-  const ticketPrice = 300
-  const subTotal = ticketCount * ticketPrice
+  const bookingComplete = selectedSeats.length > 0
+
+  const priceForRow = (row) => {
+    if (vipRows.has(row)) return 400
+    // classic and standard both ₹350
+    return 350
+  }
+
+  const seatPrice = (seatId) => {
+    const row = seatId.split('-')[0]
+    return priceForRow(row)
+  }
+
+  const subTotal = selectedSeats.reduce((sum, s) => sum + seatPrice(s), 0)
   const convenienceFee = Number((subTotal * 0.1).toFixed(2))
   const taxes = Number((subTotal * 0.05).toFixed(2))
   const totalAmount = Number((subTotal + convenienceFee + taxes).toFixed(2))
-  const formatRupee = (value) => `₹${value.toFixed(2)}`
+  const formatRupee = (value) => `₹${Number(value).toFixed(2)}`
 
   if (!movie) {
     return <div className='flex min-h-screen items-center justify-center text-gray-300'>Movie not found.</div>
@@ -69,12 +72,12 @@ const SeatLayout = () => {
   return (
     <div className='min-h-screen bg-[radial-gradient(circle_at_top,_rgba(248,69,101,0.18),_transparent_25%),linear-gradient(180deg,_#050507,_#120f16)] text-white'>
       <div className='mx-auto max-w-[1720px] px-6 py-10 lg:px-10'>
-        <div className='grid gap-8 xl:grid-cols-[1.7fr_0.8fr]'>
+        <div className='grid gap-8'>
           <main className='space-y-8'>
             <section className='rounded-[2rem] border border-white/10 bg-black/40 p-6 shadow-[0_40px_120px_rgba(0,0,0,0.45)] backdrop-blur-xl'>
               <div className='mb-4 flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-gray-300'>SCREEN THIS WAY</div>
               <div className='rounded-[2rem] bg-[#09090c] px-4 py-6 shadow-[inset_0_0_100px_rgba(0,0,0,0.35)]'>
-                <div className='mx-auto max-w-[820px] space-y-4'>
+                <div className='mx-auto w-full max-w-[1400px] space-y-4'>
                   {rows.map((row) => (
                     <div key={row} className='flex items-center gap-4'>
                       <div className='w-10 text-right text-sm uppercase tracking-[0.2em] text-gray-400'>{row}</div>
@@ -112,115 +115,79 @@ const SeatLayout = () => {
                   <h2 className='text-3xl font-semibold'>Pick your perfect view</h2>
                 </div>
                 <div className='rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300'>
-                  {selectedSeats.length}/{ticketCount} seats selected
+                  {selectedSeats.length} seats selected
                 </div>
               </div>
               <div className='grid gap-4 sm:grid-cols-2'>
                 <div className='rounded-[1.5rem] border border-white/10 bg-black/30 p-4'>
                   <p className='mb-4 text-sm uppercase tracking-[0.3em] text-gray-400'>Legend</p>
-                  <div className='space-y-3 text-sm text-gray-300'>
-                    <div className='flex items-center gap-3'>
-                      <span className='inline-flex h-4 w-4 rounded-full bg-amber-300' /> Selected
+                  <div className='flex flex-wrap items-center gap-6 text-sm text-gray-300'>
+                    <div className='inline-flex items-center gap-3'>
+                      <span className='inline-flex h-4 w-4 rounded-full bg-amber-300' />
+                      <span>Selected</span>
                     </div>
-                    <div className='flex items-center gap-3'>
-                      <span className='inline-flex h-4 w-4 rounded-full bg-white/10 border border-white/10' /> Available
+                    <div className='inline-flex items-center gap-3'>
+                      <span className='inline-flex h-4 w-4 rounded-full bg-white/10 border border-white/10' />
+                      <span>Available</span>
                     </div>
-                    <div className='flex items-center gap-3'>
-                      <span className='inline-flex h-4 w-4 rounded-full bg-[#444b5b]' /> Booked
+                    <div className='inline-flex items-center gap-3'>
+                      <span className='inline-flex h-4 w-4 rounded-full bg-[#444b5b]' />
+                      <span>Booked</span>
                     </div>
-                    <div className='flex items-center gap-3'>
-                      <span className='inline-flex h-4 w-4 rounded-full bg-amber-500/20 border border-amber-300/50' /> Premium
+                    <div className='inline-flex items-center gap-3'>
+                      <span className='inline-flex h-4 w-4 rounded-full bg-amber-500/20 border border-amber-300/50' />
+                      <span>Premium</span>
                     </div>
                   </div>
                 </div>
-                <div className='rounded-[1.5rem] border border-white/10 bg-black/30 p-4'>
+                <div className='rounded-[1.5rem] border border-white/10 bg-black/30 p-4 min-w-0'>
                   <p className='mb-4 text-sm uppercase tracking-[0.3em] text-gray-400'>Note</p>
-                  <p className='text-sm leading-6 text-gray-300'>Tap seats to select. VIP seats are in the first two rows, and reserved seats are disabled.</p>
+                  <p className='text-sm text-gray-300 truncate' title='Tap seats to select. VIP seats are in the first two rows, and reserved seats are disabled.'>Tap seats to select. VIP seats are in the first two rows, and reserved seats are disabled.</p>
                 </div>
               </div>
             </section>
           </main>
+        </div>
 
-          <aside className='space-y-8'>
-            <div className='sticky top-8 space-y-6 rounded-[2rem] border border-white/10 bg-black/40 p-6 shadow-[0_35px_100px_rgba(0,0,0,0.35)] backdrop-blur-xl'>
-              <div className='border-b border-white/10 pb-4'>
-                <p className='text-sm uppercase tracking-[0.3em] text-gray-400'>Your booking</p>
-                <div className='mt-5 flex items-start gap-4'>
-                  <img src={movie.poster} alt={movie.title} className='h-24 w-16 rounded-2xl object-cover' />
-                  <div className='space-y-2'>
-                    <h3 className='text-lg font-semibold'>{movie.title}</h3>
-                    <p className='text-sm text-gray-400'>IMAX 2D</p>
-                    <div className='space-y-1 text-sm text-gray-300'>
-                      <div className='flex items-center gap-2'><CalendarDays className='h-4 w-4 text-primary' /> {selectedDate}</div>
-                      <div className='flex items-center gap-2'><Clock3 className='h-4 w-4 text-primary' /> {selectedTime}</div>
-                      <div className='flex items-center gap-2'><Users className='h-4 w-4 text-primary' /> {ticketCount} seats</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className='rounded-[1.8rem] border border-white/10 bg-black/70 p-4'>
-                <div className='mb-4 flex items-center justify-between text-sm uppercase tracking-[0.2em] text-gray-400'>
-                  <span>Selected seats</span>
-                  <span>{selectedSeats.length}/{ticketCount}</span>
-                </div>
-                <div className='flex flex-wrap gap-2'>
-                  {selectedSeats.length > 0 ? selectedSeats.map((seat) => (
-                    <button key={seat} onClick={() => setSelectedSeats((prev) => prev.filter((item) => item !== seat))} className='inline-flex items-center gap-2 rounded-full bg-amber-300/15 px-3 py-2 text-sm text-amber-200 transition hover:bg-amber-300/25'>
-                      {seat} <Trash2 className='h-3.5 w-3.5' />
-                    </button>
-                  )) : (
-                    <div className='text-sm text-gray-500'>No seats chosen yet.</div>
-                  )}
-                </div>
-              </div>
-
-              <div className='rounded-[1.8rem] border border-white/10 bg-black/70 p-4'>
-                <div className='space-y-3 text-sm text-gray-300'>
-                  <div className='flex items-center justify-between'>
-                    <span>Ticket price</span>
-                    <span>{formatRupee(subTotal)}</span>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <span>Convenience fee</span>
-                    <span>{formatRupee(convenienceFee)}</span>
-                  </div>
-                  <div className='flex items-center justify-between'>
-                    <span>Taxes & charges</span>
-                    <span>{formatRupee(taxes)}</span>
-                  </div>
-                </div>
-                <div className='mt-4 border-t border-white/10 pt-4 text-lg font-semibold text-white'>
-                  <div className='flex items-center justify-between'>
-                    <span>Total amount</span>
-                    <span>{formatRupee(totalAmount)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                disabled={!bookingComplete}
-                onClick={() => navigate(`/movies/${id}/${selectedTime}/payment`, {
-                  state: {
-                    movieId: movie.id,
-                    title: movie.title,
-                    poster: movie.poster,
-                    selectedDate,
-                    selectedTime,
-                    ticketCount,
-                    selectedSeats,
-                    subTotal,
-                    convenienceFee,
-                    taxes,
-                    totalAmount
-                  }
-                })}
-                className={`flex w-full items-center justify-center gap-3 rounded-full px-5 py-4 text-sm font-semibold transition ${bookingComplete ? 'bg-amber-400 text-black hover:bg-amber-300' : 'cursor-not-allowed bg-white/10 text-gray-400'}`}
-              >
-                <Ticket className='h-4 w-4' /> Proceed to payment
-              </button>
+        {/* Bottom amount bar - minimal payment summary, fixed to viewport bottom */}
+        <div className='fixed bottom-6 left-0 right-0 z-50 mx-auto flex max-w-[1280px] items-center justify-between gap-4 rounded-2xl bg-black/60 border border-white/8 p-4 px-6 shadow-lg'>
+          <div className='flex items-center gap-4'>
+            <div className='text-sm text-gray-300'>
+              <div className='font-medium'>{selectedSeats.length} seats</div>
+              <div className='text-xs text-gray-400'>{selectedSeats.length > 0 ? selectedSeats.join(', ') : 'No seats selected'}</div>
             </div>
-          </aside>
+            <div className='h-10 w-px bg-white/6' />
+            <div className='text-sm text-gray-300'>
+              <div>Price: <span className='font-semibold text-white'>{formatRupee(subTotal)}</span></div>
+              <div className='text-xs text-gray-400'>Fees: {formatRupee(convenienceFee)} • Taxes: {formatRupee(taxes)}</div>
+            </div>
+          </div>
+
+          <div className='flex items-center gap-3'>
+            <div className='text-sm text-gray-400 mr-4'>Total</div>
+            <div className='text-xl font-semibold'>{formatRupee(totalAmount)}</div>
+            <button
+              disabled={!bookingComplete}
+              onClick={() => navigate(`/movies/${id}/${selectedTime}/payment`, {
+                state: {
+                  movieId: movie.id,
+                  title: movie.title,
+                  poster: movie.poster,
+                  selectedDate,
+                  selectedTime,
+                  ticketCount,
+                  selectedSeats,
+                  subTotal,
+                  convenienceFee,
+                  taxes,
+                  totalAmount
+                }
+              })}
+              className={`ml-4 rounded-full px-4 py-2 text-sm font-semibold transition ${bookingComplete ? 'bg-amber-400 text-black hover:bg-amber-300' : 'cursor-not-allowed bg-white/10 text-gray-400'}`}
+            >
+              View payment details
+            </button>
+          </div>
         </div>
       </div>
     </div>

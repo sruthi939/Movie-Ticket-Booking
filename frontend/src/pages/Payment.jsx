@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, CalendarDays, Clock3, Ticket, Users } from 'lucide-react'
 import { movies } from '../data/movies'
 
-const formatRupee = (value) => `₹${value.toFixed(2)}`
+const formatRupee = (value) => `₹${Number(value || 0).toFixed(2)}`
 
 const Payment = () => {
   const location = useLocation()
@@ -138,7 +138,32 @@ const Payment = () => {
               <button
                 type='button'
                 disabled={missingDetails}
-                onClick={() => navigate('/my-bookings')}
+                onClick={() => {
+                  if (missingDetails) return
+
+                  const bookingObj = {
+                    id: `bk_${Date.now()}`,
+                    movieId: id || movie?.id,
+                    title,
+                    poster,
+                    selectedDate,
+                    selectedTime,
+                    ticketCount,
+                    selectedSeats,
+                    subTotal,
+                    convenienceFee,
+                    taxes,
+                    totalAmount,
+                    status: 'Confirmed',
+                    createdAt: new Date().toISOString()
+                  }
+
+                  const existing = JSON.parse(localStorage.getItem('bookings') || '[]')
+                  existing.unshift(bookingObj)
+                  localStorage.setItem('bookings', JSON.stringify(existing))
+
+                  navigate(`/booking-success/${bookingObj.id}`, { state: { bookingId: bookingObj.id } })
+                }}
                 className={`mt-8 flex w-full items-center justify-center gap-3 rounded-full px-5 py-4 text-sm font-semibold transition ${missingDetails ? 'cursor-not-allowed bg-white/10 text-gray-400' : 'bg-amber-400 text-black hover:bg-amber-300'}`}
               >
                 {missingDetails ? 'Payment unavailable' : 'Pay now'}
