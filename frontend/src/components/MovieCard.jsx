@@ -1,35 +1,34 @@
-import { Star } from 'lucide-react'
-import { } from 'react'
+import { Star, Ticket } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import timeFormate from '../lib/timeFormate'
 
 const MovieCard = ({ movie }) => {
-
     const navigate = useNavigate()
 
     return (
-        <div className='flex flex-col justify-between p-3 bg-gray-800 rounded-2xl hover:-translate-y-1 transition duration-300 w-66'>
+        <div className='flex w-72 flex-col justify-between rounded-[1.6rem] border border-white/10 bg-white/5 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.3)] transition duration-300 hover:-translate-y-1'>
             <img
-                onClick={() => { navigate(`/movies/${movie._id}`); scrollTo(0, 0) }}
-                src={movie.backdrop_path}
-                alt=''
-                className='rounded-lg h-52 w-full object-cover object-bottom-right cursor-pointer'
+                onClick={() => { navigate(`/movies/${movie.id}`); window.scrollTo(0, 0) }}
+                src={movie.poster}
+                alt={movie.title}
+                className='h-56 w-full cursor-pointer rounded-[1.1rem] object-cover object-center'
             />
-            <p className='font-semibold mt-2 truncate'>
-                {movie.title}
-            </p>
-            <p className='text-sm text-gray-400 mt-2'>
-                {new Date(movie.release_date).getFullYear()} •
-                {movie.genres.slice(0, 2).map(genre => genre.name).join(" | ")} • {timeFormate(movie.runtime)}
-            </p>
-            <div className='flex items-center justify-between mt-4 pb-3'>
-                <button onClick={() => { navigate(`/movies/${movie._id}`); scrollTo(0, 0) }} className='px-4 py-2 text-xs bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer'>
-                    Buy Ticket
-                </button>
-                <p className='flex items-center gap-1 text-sm text-gray-400 mt-1 pr-1'>
-                    <Star className='w-4 h-4 text-primary fill-primary' />
-                    {movie.vote_average.toFixed(1)}
+            <div className='px-1 pb-2 pt-4'>
+                <p className='truncate text-lg font-semibold'>
+                    {movie.title}
                 </p>
+                <p className='mt-2 text-sm text-gray-400'>
+                    {movie.year} • {movie.genres.slice(0, 2).join(' | ')} • {timeFormate(movie.runtime)}
+                </p>
+                <div className='mt-4 flex items-center justify-between'>
+                    <button onClick={() => { navigate(`/movies/${movie.id}`); window.scrollTo(0, 0) }} className='flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-xs font-medium transition hover:bg-primary-dull'>
+                        <Ticket className='h-3.5 w-3.5' /> Buy Ticket
+                    </button>
+                    <p className='mr-1 flex items-center gap-1 text-sm text-gray-400'>
+                        <Star className='h-4 w-4 fill-primary text-primary' />
+                        {movie.rating.toFixed(1)}
+                    </p>
+                </div>
             </div>
         </div>
     )

@@ -4,51 +4,41 @@ import { MenuIcon, Search, TicketPlus, X } from 'lucide-react'
 import { useClerk, UserButton, useUser } from '@clerk/clerk-react'
 
 const Navbar = () => {
-
   const [isOpen, setIsOpen] = useState(false)
   const { user } = useUser()
   const { openSignIn } = useClerk()
-
   const navigate = useNavigate()
 
   return (
-    <div className='fixed top-0 left-0 z-50 w-full flex items-center justify-between px-6 md:px-16 lg:px-36 py-5'>
-      <Link to='/' className='max-md: flex-1'>
-        <img src="" alt='logo' className='w-36 h-auto' />
+    <div className='fixed left-0 top-0 z-50 flex w-full items-center justify-between px-6 py-5 md:px-16 lg:px-36'>
+      <Link to='/' className='max-md:flex-1'>
+        <div className='rounded-full border border-primary/40 bg-black/40 px-4 py-2 text-sm font-semibold tracking-[0.3em] text-white backdrop-blur'>CINEMA</div>
       </Link>
       <div className='absolute left-1/2 -translate-x-1/2'>
-        <div className={`max-md:fixed max-md:top-0 max-md:left-0 max-md:font-medium max-md:text-lg z-50 flex flex-col md:flex-row items-center max-md:justify-center gap-8 md:px-8 py-3 max-md:h-screen md:rounded-full backdrop-blur bg-black/70 md:bg-white/10 md:border border-gray-300/20 overflow-hidden transition-all duration-300 ${isOpen ? 'max-md:w-full' : 'max-md:w-0'}`}>
-          <X className='md:hidden absolute top-6 right-6 w-6 h-6 cursor-pointer' onClick={() => setIsOpen(!isOpen)} />
-          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/'>Home</Link>
-          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/movies'>Movies</Link>
-          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/theaters'>Theaters</Link>
-          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/releases'>Releases</Link>
-          <Link onClick={() => { scrollTo(0, 0); setIsOpen(false) }} to='/favorites'>Favorites</Link>
+        <div className={`z-50 flex flex-col items-center gap-8 overflow-hidden bg-black/70 py-3 backdrop-blur transition-all duration-300 max-md:fixed max-md:left-0 max-md:top-0 max-md:h-screen max-md:justify-center max-md:text-lg max-md:font-medium md:flex-row md:rounded-full md:border md:border-gray-300/20 md:bg-white/10 md:px-8 ${isOpen ? 'max-md:w-full' : 'max-md:w-0'}`}>
+          <X className='absolute right-6 top-6 h-6 w-6 cursor-pointer md:hidden' onClick={() => setIsOpen(!isOpen)} />
+          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false) }} to='/'>Home</Link>
+          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false) }} to='/movies'>Movies</Link>
+          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false) }} to='/favorite'>Favorites</Link>
+          <Link onClick={() => { window.scrollTo(0, 0); setIsOpen(false) }} to='/my-bookings'>Bookings</Link>
         </div>
       </div>
       <div className='flex items-center gap-8'>
-        <Search className='max-md:hidden w-6 h-6 cursor-pointer' />
-        {
-          !user ? (
-            <button onClick={openSignIn} className='px-4 py-1 sm:px-7 sm:py-2 bg-primary hover:bg-primary-dull transition rounded-full font-medium cursor-pointer'>
-              Login
-            </button>
-          ) : (
-            <UserButton>
-              <UserButton.MenuItems>
-                <UserButton.Action label='My Bookings'
-                  labelIcon={<TicketPlus width={15} />}
-                  onClick={() => navigate('/')}
-                />
-              </UserButton.MenuItems>
-            </UserButton>
-          )
-        }
-
+        <Search className='hidden h-6 w-6 cursor-pointer md:block' />
+        {!user ? (
+          <button onClick={openSignIn} className='cursor-pointer rounded-full bg-primary px-4 py-1 font-medium transition hover:bg-primary-dull sm:px-7 sm:py-2'>
+            Login
+          </button>
+        ) : (
+          <UserButton>
+            <UserButton.MenuItems>
+              <UserButton.Action label='My Bookings' labelIcon={<TicketPlus width={15} />} onClick={() => navigate('/my-bookings')} />
+            </UserButton.MenuItems>
+          </UserButton>
+        )}
       </div>
 
-      <MenuIcon className='max-md:ml-4 md:hidden w-8 h-8 cursor-pointer' onClick={() => setIsOpen(!isOpen)} />
-
+      <MenuIcon className='ml-4 h-8 w-8 cursor-pointer md:hidden' onClick={() => setIsOpen(!isOpen)} />
     </div>
   )
 }

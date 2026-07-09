@@ -8,6 +8,7 @@ import MovieDetails from './pages/MovieDetails'
 import MyBookings from './pages/MyBookings'
 import Favorite from './pages/Favorite'
 import SeatLayout from './pages/SeatLayout'
+import Payment from './pages/Payment'
 import { Toaster } from 'react-hot-toast'
 
 const App = () => {
@@ -22,7 +23,8 @@ const App = () => {
         <Route path='/' element={<Home/>} />
         <Route path='/movies' element={<Movies/>} />
         <Route path='/movies/:id' element={<MovieDetails/>} />
-        <Route path='/movies/:id/:date' element={<SeatLayout/>} />
+        <Route path='/movies/:id/:time' element={<SeatLayout/>} />
+        <Route path='/movies/:id/:time/payment' element={<Payment/>} />
         <Route path='/favorite' element={<Favorite/>} />
         <Route path='/my-bookings' element={<MyBookings/>} />
         <Route path='/' element={<Home/>} />
