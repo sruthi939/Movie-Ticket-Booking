@@ -3,6 +3,7 @@ import { ArrowRight, Sparkles, Ticket, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { movies } from '../data/movies'
 
+
 const Movies = () => {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState('All')

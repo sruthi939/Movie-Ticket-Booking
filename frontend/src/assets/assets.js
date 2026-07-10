@@ -1,11 +1,11 @@
 import logo from './logo.png';
-import movie1 from './movie1.jpeg';
-import movie2 from './movie2.jpeg';
-import movie3 from './movie3.jpeg';
-import movie4 from './movie4.jpeg';
-import movie5 from './movie5.jpeg';
-import movie6 from './movie6.jpeg';
-import HeroSection from './HeroSection.png';
+import movie1 from './images/movie1.jpeg';
+import movie2 from './images/movie2.jpeg';
+import movie3 from './images/movie3.jpeg';
+import movie4 from './images/movie4.jpeg';
+import movie5 from './images/movie5.jpeg';
+import movie6 from './images/movie6.jpeg';
+import HeroSection from './images/HeroSection.png';
 
 export const assets = {
     logo,

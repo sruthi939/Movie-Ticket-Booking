@@ -1,4 +1,4 @@
-const timeFormate = (minutes) => {
+const timeFormat = (minutes) => {
   if (!Number.isFinite(minutes) || minutes <= 0) return '0m'
 
   const hrs = Math.floor(minutes / 60)
@@ -9,4 +9,5 @@ const timeFormate = (minutes) => {
   return `${mins}m`
 }
 
-export default timeFormate
+export default timeFormat
+export { timeFormat, timeFormat as timeFormate }
