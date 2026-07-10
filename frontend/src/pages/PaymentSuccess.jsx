@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { CheckCircle2, CalendarDays, Clock3, Ticket, Users } from 'lucide-react'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
 const formatRupee = (value) => `₹${Number(value || 0).toFixed(2)}`
 
 const PaymentSuccess = () => {
@@ -10,9 +11,20 @@ const PaymentSuccess = () => {
   const [booking, setBooking] = useState(null)
 
   useEffect(() => {
-    const all = JSON.parse(localStorage.getItem('bookings') || '[]')
-    const found = all.find((b) => b.id === bookingId)
-    setBooking(found || null)
+    const loadBooking = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/bookings/${bookingId}`)
+        if (!response.ok) throw new Error('Booking not found')
+        const data = await response.json()
+        setBooking(data)
+      } catch (error) {
+        const all = JSON.parse(localStorage.getItem('bookings') || '[]')
+        const found = all.find((b) => b.id === bookingId)
+        setBooking(found || null)
+      }
+    }
+
+    loadBooking()
   }, [bookingId])
 
   if (!booking) {

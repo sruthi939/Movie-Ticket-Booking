@@ -1,17 +1,10 @@
-import express from 'express'
-import cors from 'cors'
 import { promises as fs } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-const app = express()
-const requestedPort = Number(process.env.PORT) || 5000
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-const dataFile = path.join(__dirname, 'bookings.json')
-
-app.use(cors())
-app.use(express.json())
+const dataFile = path.join(__dirname, '..', '..', 'bookings.json')
 
 let bookings = []
 
@@ -25,7 +18,6 @@ const loadBookings = async () => {
       bookings = []
       return
     }
-
     throw error
   }
 }
@@ -34,16 +26,14 @@ const persistBookings = async () => {
   await fs.writeFile(dataFile, JSON.stringify(bookings, null, 2), 'utf8')
 }
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' })
-})
-
-app.get('/api/bookings', (req, res) => {
+export const getAllBookings = async (req, res) => {
+  await loadBookings()
   const sortedBookings = [...bookings].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   res.json(sortedBookings)
-})
+}
 
-app.get('/api/bookings/:id', (req, res) => {
+export const getBookingById = async (req, res) => {
+  await loadBookings()
   const booking = bookings.find((item) => item.id === req.params.id)
 
   if (!booking) {
@@ -51,9 +41,10 @@ app.get('/api/bookings/:id', (req, res) => {
   }
 
   res.json(booking)
-})
+}
 
-app.post('/api/bookings', async (req, res) => {
+export const createBooking = async (req, res) => {
+  await loadBookings()
   const booking = {
     id: `bk_${Date.now()}`,
     ...req.body,
@@ -63,32 +54,4 @@ app.post('/api/bookings', async (req, res) => {
   bookings.unshift(booking)
   await persistBookings()
   res.status(201).json(booking)
-})
-
-const startServer = (port) => {
-  const server = app.listen(port, () => {
-    console.log(`Backend running on http://localhost:${port}`)
-  })
-
-  server.on('error', (error) => {
-    if (error.code === 'EADDRINUSE') {
-      const fallbackPort = port + 1
-      console.warn(`Port ${port} is busy. Trying ${fallbackPort} instead...`)
-      startServer(fallbackPort)
-      return
-    }
-
-    console.error('Failed to start backend server:', error)
-    process.exit(1)
-  })
 }
-
-const bootstrap = async () => {
-  await loadBookings()
-  startServer(requestedPort)
-}
-
-bootstrap().catch((error) => {
-  console.error('Failed to initialize backend:', error)
-  process.exit(1)
-})
