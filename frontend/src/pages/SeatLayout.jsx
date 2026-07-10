@@ -3,9 +3,11 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, CalendarDays, CheckCircle2, Clock3, Ticket, Trash2, Users } from 'lucide-react'
 import { movies } from '../data/movies'
 
-const rows = ['A','B','C','D','E','F','G','H','I','J','K','L','M']
-const seatsPerRow = 14
-const vipRows = new Set(['A', 'B', 'C'])
+const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
+// Seat categories: standard = front, classic = middle, vip = back
+const standardRows = new Set(['A', 'B', 'C', 'D', 'E'])
+const classicRows = new Set(['F', 'G', 'H', 'I', 'J'])
+const vipRows = new Set(['K', 'L'])
 const reservedSeats = new Set(['C-6', 'D-4', 'D-5', 'F-12', 'G-8', 'H-3', 'H-4', 'J-10', 'L-14'])
 
 const buildDateOptions = () => {
@@ -82,25 +84,48 @@ const SeatLayout = () => {
                     <div key={row} className='flex items-center gap-4'>
                       <div className='w-10 text-right text-sm uppercase tracking-[0.2em] text-gray-400'>{row}</div>
                       <div className='flex w-full justify-center gap-3 overflow-x-auto px-2'>
-                        {Array.from({ length: seatsPerRow }, (_, index) => {
-                          const seatNumber = index + 1
-                          const seatId = `${row}-${seatNumber}`
-                          const isReserved = reservedSeats.has(seatId)
-                          const isSelected = selectedSeats.includes(seatId)
-                          const isVip = vipRows.has(row)
+                        {Array.from(
+                          {
+                            length: vipRows.has(row)
+                              ? 10
+                              : classicRows.has(row)
+                                ? 14
+                                : 10
+                          },
+                          (_, index) => {
+                            const seatNumber = index + 1
+                            const seatId = `${row}-${seatNumber}`
 
-                          return (
-                            <button
-                              key={seatId}
-                              type='button'
-                              disabled={isReserved}
-                              onClick={() => toggleSeat(seatId, isReserved)}
-                              className={`flex h-12 w-12 items-center justify-center rounded-2xl border text-sm font-semibold transition ${isReserved ? 'cursor-not-allowed border-[#444b5b] bg-[#16181f] text-[#6b7280]' : isSelected ? 'border-amber-300 bg-amber-400 text-black shadow-[0_0_20px_rgba(251,191,36,0.35)]' : isVip ? 'border-amber-300/50 bg-amber-500/10 text-amber-200 hover:border-amber-300 hover:bg-amber-500/20' : 'border-white/10 bg-white/5 text-gray-300 hover:border-primary hover:bg-white/10'}`}
-                            >
-                              {seatNumber}
-                            </button>
-                          )
-                        })}
+                            const isReserved = reservedSeats.has(seatId)
+                            const isSelected = selectedSeats.includes(seatId)
+                            const isVip = vipRows.has(row)
+                            const isClassic = classicRows.has(row)
+
+                            const showGap = (isVip || isClassic)
+                              ? seatNumber === 3 || seatNumber === 7
+                              : seatNumber === 4 || seatNumber === 10
+
+                            return (
+                              <div key={seatId} className="flex items-center">
+                                <button
+                                  key={seatId}
+                                  type='button'
+                                  disabled={isReserved}
+                                  onClick={() => toggleSeat(seatId, isReserved)}
+                                  className={`flex h-12 w-12 items-center justify-center rounded-2xl border text-sm font-semibold transition ${isReserved
+                                      ? 'cursor-not-allowed border-[#444b5b] bg-[#16181f] text-[#6b7280]'
+                                      : isSelected ? 'border-amber-300 bg-amber-400 text-black shadow-[0_0_20px_rgba(251,191,36,0.35)]'
+                                        : isVip ? 'border-amber-300/50 bg-amber-500/10 text-amber-200 hover:border-amber-300 hover:bg-amber-500/20'
+                                          : isClassic ? 'border-white/20 bg-white/6 text-gray-200 hover:border-primary hover:bg-white/10'
+                                            : 'border-white/10 bg-white/5 text-gray-300 hover:border-primary hover:bg-white/10'
+                                    }`}
+                                >
+                                  {seatNumber}
+                                </button>
+                                {showGap && <div className="w-8" />}
+                              </div>
+                            )
+                          })}
                       </div>
                     </div>
                   ))}
@@ -110,10 +135,6 @@ const SeatLayout = () => {
 
             <section className='rounded-[2rem] border border-white/10 bg-black/40 p-6 shadow-[0_35px_100px_rgba(0,0,0,0.35)] backdrop-blur-xl'>
               <div className='mb-5 flex flex-wrap items-center justify-between gap-4'>
-                <div>
-                  <p className='text-sm uppercase tracking-[0.3em] text-gray-400'>Select your seats</p>
-                  <h2 className='text-3xl font-semibold'>Pick your perfect view</h2>
-                </div>
                 <div className='rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300'>
                   {selectedSeats.length} seats selected
                 </div>
@@ -139,10 +160,6 @@ const SeatLayout = () => {
                       <span>Premium</span>
                     </div>
                   </div>
-                </div>
-                <div className='rounded-[1.5rem] border border-white/10 bg-black/30 p-4 min-w-0'>
-                  <p className='mb-4 text-sm uppercase tracking-[0.3em] text-gray-400'>Note</p>
-                  <p className='text-sm text-gray-300 truncate' title='Tap seats to select. VIP seats are in the first two rows, and reserved seats are disabled.'>Tap seats to select. VIP seats are in the first two rows, and reserved seats are disabled.</p>
                 </div>
               </div>
             </section>

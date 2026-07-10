@@ -3,6 +3,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowRight, CalendarDays, Clock3, Ticket, Users } from 'lucide-react'
 import { movies } from '../data/movies'
 
+const API_BASE_URL = 'http://localhost:5000/api'
+
 const formatRupee = (value) => `₹${Number(value || 0).toFixed(2)}`
 
 const Payment = () => {
@@ -138,11 +140,10 @@ const Payment = () => {
               <button
                 type='button'
                 disabled={missingDetails}
-                onClick={() => {
+                onClick={async () => {
                   if (missingDetails) return
 
                   const bookingObj = {
-                    id: `bk_${Date.now()}`,
                     movieId: id || movie?.id,
                     title,
                     poster,
@@ -154,15 +155,26 @@ const Payment = () => {
                     convenienceFee,
                     taxes,
                     totalAmount,
-                    status: 'Confirmed',
-                    createdAt: new Date().toISOString()
+                    status: 'Confirmed'
                   }
 
-                  const existing = JSON.parse(localStorage.getItem('bookings') || '[]')
-                  existing.unshift(bookingObj)
-                  localStorage.setItem('bookings', JSON.stringify(existing))
+                  try {
+                    const response = await fetch(`${API_BASE_URL}/bookings`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(bookingObj)
+                    })
 
-                  navigate(`/booking-success/${bookingObj.id}`, { state: { bookingId: bookingObj.id } })
+                    const savedBooking = await response.json()
+                    localStorage.setItem('bookings', JSON.stringify([savedBooking]))
+                    navigate(`/booking-success/${savedBooking.id}`, { state: { bookingId: savedBooking.id } })
+                  } catch (error) {
+                    console.error('Failed to save booking:', error)
+                    const existing = JSON.parse(localStorage.getItem('bookings') || '[]')
+                    existing.unshift({ id: `bk_${Date.now()}`, ...bookingObj, createdAt: new Date().toISOString() })
+                    localStorage.setItem('bookings', JSON.stringify(existing))
+                    navigate('/my-bookings')
+                  }
                 }}
                 className={`mt-8 flex w-full items-center justify-center gap-3 rounded-full px-5 py-4 text-sm font-semibold transition ${missingDetails ? 'cursor-not-allowed bg-white/10 text-gray-400' : 'bg-amber-400 text-black hover:bg-amber-300'}`}
               >

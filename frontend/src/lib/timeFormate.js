@@ -1,7 +1,12 @@
 const timeFormate = (minutes) => {
-    const hours = Math.floor(minutes / 60);
-    const minutesRemainder = minutes % 60;
-    return `${hours}h ${minutesRemainder}m`
+  if (!Number.isFinite(minutes) || minutes <= 0) return '0m'
+
+  const hrs = Math.floor(minutes / 60)
+  const mins = minutes % 60
+
+  if (hrs && mins) return `${hrs}h ${mins}m`
+  if (hrs) return `${hrs}h`
+  return `${mins}m`
 }
 
-export default timeFormate;
+export default timeFormate
