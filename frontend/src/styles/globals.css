@@ -1,0 +1,25 @@
+/* globals.css — theme variables & base resets */
+
+:root {
+  --font-sans: 'Outfit', sans-serif;
+  --color-bg: #09090b;
+  --color-primary: #f84565;
+  --color-primary-dull: #d63854;
+  --color-accent: #fbbf24;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom interactive selections */
+::selection {
+  background-color: rgba(248, 69, 101, 0.3);
+  color: #ffffff;
+}
