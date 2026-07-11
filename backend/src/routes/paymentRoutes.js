@@ -1,7 +1,8 @@
 import express from 'express'
+import { processPayment } from '../controllers/paymentController.js'
 
 const router = express.Router()
 
-router.post('/', (req, res) => res.json({ message: 'Payment placeholder' }))
+router.post('/process', processPayment)
 
 export default router

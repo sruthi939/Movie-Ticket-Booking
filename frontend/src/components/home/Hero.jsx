@@ -8,15 +8,15 @@ const Hero = () => {
   const featured = movies[0]
 
   return (
-    <div className='relative flex min-h-screen flex-col items-start justify-center overflow-hidden px-6 py-24 md:px-16 lg:px-36'>
+    <div className='relative flex min-h-screen flex-col items-start justify-start overflow-hidden px-6 pt-36 pb-24 md:px-16 lg:px-36'>
       {/* Background artwork */}
       <div className='absolute inset-0 overflow-hidden z-0'>
         <img
           src={featured.backdrop}
           alt={featured.title}
-          className='h-full w-full object-cover opacity-25 scale-105 filter blur-[2px]'
+          className='h-full w-full object-cover opacity-85'
         />
-        <div className='absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/80 to-transparent' />
+        <div className='absolute inset-0 bg-gradient-to-r from-[#09090b] via-[#09090b]/50 to-transparent' />
         <div className='absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent' />
       </div>
 
